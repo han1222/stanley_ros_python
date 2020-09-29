@@ -23,9 +23,9 @@ def error(msg):
     fx = msg.data[0] * x ** 3 + msg.data[1] * x ** 2 +  msg.data[2] * x ** 1 + msg.data[3]
     fprime = Derivative(fx, x).doit()
     n = fprime.subs({x: 2.6})
-    cte=-1*fx.subs({x: 2.6}) # check this today
+    cte=fx.subs({x: 2.6}) # check this today
     crosstrack_error_term=math.atan((gain*cte)/(velocity+soft_term))
-    heading_error_term=-1*math.atan(n)
+    heading_error_term=math.atan(n)
     #print("heading_error term: ",heading_error_term )
     #print("crosstrack_error_term: ",crosstrack_error_term)
     delta= crosstrack_error_term+ heading_error_term
