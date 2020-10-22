@@ -1,6 +1,5 @@
 #!/usr/bin/env python
-# I will add feedforwardterm later
-# I will high speed damping term too
+
 import rospy
 import math
 import matplotlib.pyplot as plt
