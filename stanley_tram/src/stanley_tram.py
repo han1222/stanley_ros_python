@@ -4,7 +4,7 @@
 import rospy
 import math
 import matplotlib.pyplot as plt
-from sympy import Derivative, symbols
+from sympy import symbols #Derivative
 from std_msgs.msg import Float32MultiArray
 from ackermann_msgs.msg import AckermannDriveStamped
 from std_msgs.msg import Float32 
@@ -40,10 +40,10 @@ def error(msg):
     global prev_delta
     x = symbols('x')
     fx = msg.data[0] * x ** 3 + msg.data[1] * x ** 2 +  msg.data[2] * x ** 1 + msg.data[3]
-    fprime = Derivative(fx, x).doit()
-    #fprinme=3*msg.data[0]*x**2+2*msg.data[1]*x+msg.data[2]
-    f_2_prime=Derivative(fprime, x).doit()
-    #f_2_prime=6*msg.data[0]*x+2*msg.data[1]
+    # fprime = Derivative(fx, x).doit()
+    fprime=3*msg.data[0]*x**2+2*msg.data[1]*x+msg.data[2]
+    # f_2_prime=Derivative(fprime, x).doit()
+    f_2_prime=6*msg.data[0]*x+2*msg.data[1]
     n = fprime.subs({x:2.5})
     n_2=f_2_prime.subs({x: 2.5})
     radius=((pow(n,2)+1)*(math.sqrt(pow(n,2)+1))) / n_2
@@ -75,14 +75,15 @@ def error(msg):
         delta=prev_delta - steering_vel_constraint * dt * math.pi / 180 / steering_ratio
         
     #low pass filter
-    low_pass_gain = 0.0
-    delta = (1-low_pass_gain) * delta + low_pass_gain * prev_delta
+    low_pass_gain = 0.0 # The closer to 0, the more filtering is performed and the speed is slower. The closer to 1, the less filtering is performed and the faster the speed.
+    #delta = (1-low_pass_gain) * delta + low_pass_gain * prev_delta
+    delta=(1-low_pass_gain)*prev_delta +delta*low_pass_gain
     steer_angle.append(delta * steering_ratio * 180 / math.pi)    
    
     print("------------------------------------")
     print("angular_velocity:",((((delta-prev_delta)* steering_ratio * 180) / math.pi)/dt))
     print("Steering_angle: ",delta * steering_ratio * 180 / math.pi)
-    print("CTE: ", cte, "Cross Track Error Term: ",crosstrack_error_term  * steering_ratio * 180 / math.pi)
+    print("Cte: ", cte, "Cross Track Error Term: ",crosstrack_error_term  * steering_ratio * 180 / math.pi)
     print("Heading Error Term: ",heading_error_term *  steering_ratio * 180 / math.pi)
     print("feedforwardterm : ",feedforward_term*  steering_ratio * 180 / math.pi)
     angular_velocity_list.append(((((delta-prev_delta)* steering_ratio * 180) / math.pi)/dt))
